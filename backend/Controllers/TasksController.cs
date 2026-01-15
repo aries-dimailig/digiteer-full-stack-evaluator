@@ -5,6 +5,20 @@ using System.Threading.Tasks;
 
 using TaskManager.Models;
 using TaskManager.Data;
+
+public class CreateTaskRequest 
+{
+    public string Title { get; set; } = string.Empty;
+    public bool IsDone { get; set; }
+    public int UserId { get; set; }
+}
+
+public class UpdateTaskRequest 
+{
+    public string Title { get; set; } = string.Empty;
+    public bool IsDone { get; set; }
+}
+
 namespace TaskManager.API
 {
     [Route("tasks")]
@@ -27,8 +41,14 @@ namespace TaskManager.API
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody] TaskItem task)
+        public async Task<IActionResult> Create([FromBody] CreateTaskRequest req)
         {
+            var task = new TaskItem
+            {
+                Title = req.Title,
+                IsDone = req.IsDone,
+                UserId = req.UserId
+            };
             
             _context.Tasks.Add(task);
             await _context.SaveChangesAsync();
@@ -36,7 +56,7 @@ namespace TaskManager.API
         }
 
         [HttpPut("{id}")] 
-        public async Task<IActionResult> Update(int id, [FromBody] TaskItem updated)
+        public async Task<IActionResult> Update(int id, [FromBody] UpdateTaskRequest updated)
         {
             var task = await _context.Tasks.FindAsync(id);
             if (task == null) return NotFound();
